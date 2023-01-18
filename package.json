@@ -37,7 +37,6 @@
     "react-file-drop": "^3.1.5",
     "react-scripts": "^5.0.1",
     "react-video-editor": "^1.0.2",
-    "shaneFFMPEG": "git+https://github.com/Shane-Geary/shaneFFMPEG.git",
     "styled-components": "^5.3.5",
     "tss-react": "^3.4.1",
     "use-debounce": "^7.0.1",
