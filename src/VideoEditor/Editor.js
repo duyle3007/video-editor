@@ -18,7 +18,7 @@ import {
 
 import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg"; // https://github.com/ffmpegwasm/ffmpeg.wasm/blob/master/docs/api.md
 
-function Editor({ videoUrl, timings, setTimings }) {
+function Editor({ videoUrl, timings, setTimings, ready, ffmpeg }) {
   //Boolean state to handle video mute
   const [isMuted, setIsMuted] = useState(false);
 
@@ -72,31 +72,6 @@ function Editor({ videoUrl, timings, setTimings }) {
   const [progress, setProgress] = useState(0);
 
   //Boolean state handling whether ffmpeg has loaded or not
-  const [ready, setReady] = useState(false);
-
-  //Ref to handle the current instance of ffmpeg when loaded
-  const ffmpeg = useRef(null);
-
-  //Function handling loading in ffmpeg
-  const load = async () => {
-    try {
-      await ffmpeg.current.load();
-
-      setReady(true);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  //Loading in ffmpeg when this component renders
-  useEffect(() => {
-    ffmpeg.current = createFFmpeg({
-      log: true,
-      corePath: "https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js",
-    });
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   console.log("ready", ready);
 
@@ -712,7 +687,7 @@ function Editor({ videoUrl, timings, setTimings }) {
           </button>
         </div>
         <div>
-          <button
+          {/* <button
             title="Add grabber"
             className="trim-control margined"
             onClick={addGrabber}
@@ -725,7 +700,7 @@ function Editor({ videoUrl, timings, setTimings }) {
             onClick={preDeleteGrabber}
           >
             Delete <FontAwesomeIcon icon={faGripLinesVertical} />
-          </button>
+          </button> */}
           <button
             title="Save changes"
             className="trim-control"
