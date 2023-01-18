@@ -98,6 +98,8 @@ function Editor({ videoUrl, timings, setTimings }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  console.log("ready", ready);
+
   //Lifecycle handling the logic needed for the progress bar - displays the blue bar that grows as the video plays
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
