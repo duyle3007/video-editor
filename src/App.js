@@ -8,6 +8,7 @@ function App() {
 
   //Ref to handle the current instance of ffmpeg when loaded
   const ffmpeg = useRef(null);
+
   //Function handling loading in ffmpeg
   const load = async () => {
     try {
