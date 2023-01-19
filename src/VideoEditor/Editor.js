@@ -7,7 +7,6 @@ import {
   faVolumeUp,
   faPause,
   faPlay,
-  faGripLinesVertical,
   faSync,
   faStepBackward,
   faStepForward,
@@ -16,7 +15,7 @@ import {
   faEraser,
 } from "@fortawesome/free-solid-svg-icons"; // https://fontawesome.com/v5/docs/web/use-with/react
 
-import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg"; // https://github.com/ffmpegwasm/ffmpeg.wasm/blob/master/docs/api.md
+import { fetchFile } from "@ffmpeg/ffmpeg"; // https://github.com/ffmpegwasm/ffmpeg.wasm/blob/master/docs/api.md
 
 function Editor({ videoUrl, timings, setTimings, ready, ffmpeg }) {
   //Boolean state to handle video mute
@@ -73,7 +72,7 @@ function Editor({ videoUrl, timings, setTimings, ready, ffmpeg }) {
 
   //Boolean state handling whether ffmpeg has loaded or not
 
-  console.log("ready", ready);
+  console.log("ready", ready, progress);
 
   //Lifecycle handling the logic needed for the progress bar - displays the blue bar that grows as the video plays
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -302,29 +301,29 @@ function Editor({ videoUrl, timings, setTimings, ready, ffmpeg }) {
   };
 
   //Function handling adding new trim markers logic
-  const addGrabber = () => {
-    const time = timings;
-    const end = time[time.length - 1].end + difference;
-    setDeletingGrabber({ deletingGrabber: false, currentWarning: null });
-    if (end >= playVideoRef.current.duration) {
-      return;
-    }
-    time.push({ start: end + 0.2, end: playVideoRef.current.duration });
-    setTimings(time);
-    addActiveSegments();
-  };
+  // const addGrabber = () => {
+  //   const time = timings;
+  //   const end = time[time.length - 1].end + difference;
+  //   setDeletingGrabber({ deletingGrabber: false, currentWarning: null });
+  //   if (end >= playVideoRef.current.duration) {
+  //     return;
+  //   }
+  //   time.push({ start: end + 0.2, end: playVideoRef.current.duration });
+  //   setTimings(time);
+  //   addActiveSegments();
+  // };
 
   //Function handling first step of deleting trimmer
-  const preDeleteGrabber = () => {
-    if (deletingGrabber) {
-      setDeletingGrabber({ deletingGrabber: false, currentWarning: null });
-    } else {
-      setDeletingGrabber({
-        deletingGrabber: true,
-        currentWarning: "delete_grabber",
-      });
-    }
-  };
+  // const preDeleteGrabber = () => {
+  //   if (deletingGrabber) {
+  //     setDeletingGrabber({ deletingGrabber: false, currentWarning: null });
+  //   } else {
+  //     setDeletingGrabber({
+  //       deletingGrabber: true,
+  //       currentWarning: "delete_grabber",
+  //     });
+  //   }
+  // };
 
   //Function handling deletion of trimmers logic
   const deleteGrabber = (index) => {
