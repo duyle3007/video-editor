@@ -379,7 +379,7 @@ function Editor({ videoUrl, ready, ffmpeg }) {
   };
 
   // Function handling logic for post trimmed video
-  const saveVideo = async (fileInput) => {
+  const saveVideo = async () => {
     let metadata = {
       trim_times: timings,
       mute: isMuted,
@@ -424,18 +424,20 @@ function Editor({ videoUrl, ready, ffmpeg }) {
       const data = ffmpeg.current.FS("readFile", "output.mp4");
 
       const url = URL.createObjectURL(
-        new Blob([data.buffer], { type: "video/mp4" })
+        new Blob([data.buffer], { type: "video/mp4" }, "hello.mp4")
       );
 
       setTrimmedVideo(url);
       setTrimmingDone(true);
       const link = document.createElement("a");
+      console.log("url", url, data);
       link.href = url;
-      link.download = url;
+      link.download = url + ".mp4";
+      link.setAttribute("download", `output.mp4`);
+
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      // setLottiePlaying(false)
     } catch (error) {
       console.log(error);
     }
