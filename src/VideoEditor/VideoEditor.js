@@ -1,14 +1,18 @@
 /* eslint-disable func-names */
 import { useState, useEffect } from "react";
-import { FileDrop } from "react-file-drop"; // https://github.com/sarink/react-file-drop
+import axios from "axios";
+// import { FileDrop } from "react-file-drop"; // https://github.com/sarink/react-file-drop
 import "../editor.css";
 import Editor from "./Editor";
+import { notification, Button, Input } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // https://fontawesome.com/v5/docs/web/use-with/react
 import { faLightbulb, faMoon } from "@fortawesome/free-solid-svg-icons"; // https://fontawesome.com/v5/docs/web/use-with/react
 
 function VideoEditor({ ready, ffmpeg }) {
   //Boolean state handling whether upload has occured or not
   const [isUpload, setIsUpload] = useState(true);
+  const [userInput, setUserInput] = useState("");
+  const [isConverting, setIsConverting] = useState(false);
 
   //State handling storing of the video
   const [videoUrl, setVideoUrl] = useState("");
@@ -18,7 +22,6 @@ function VideoEditor({ ready, ffmpeg }) {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   //Stateful array handling storage of the start and end times of videos
-  const [timings, setTimings] = useState([]);
 
   //Lifecycle handling light and dark themes
   useEffect(() => {
@@ -34,7 +37,7 @@ function VideoEditor({ ready, ffmpeg }) {
   const renderUploader = () => {
     return (
       <div className={"wrapper"}>
-        <input
+        {/* <input
           onChange={(e) => uploadFile(e.target.files)}
           type="file"
           className="hidden"
@@ -45,7 +48,19 @@ function VideoEditor({ ready, ffmpeg }) {
           onTargetClick={() => document.getElementById("up_file").click()}
         >
           Click or drop your video here to edit!
-        </FileDrop>
+        </FileDrop> */}
+        <Input
+          placeholder="Please enter youtube url"
+          onChange={(e) => setUserInput(e.target.value)}
+        />
+        <Button
+          type="primary"
+          onClick={handleDownload}
+          loading={isConverting}
+          style={{ marginTop: 30 }}
+        >
+          Start
+        </Button>
       </div>
     );
   };
@@ -58,8 +73,6 @@ function VideoEditor({ ready, ffmpeg }) {
         videoUrl={videoUrl}
         videoBlob={videoBlob}
         setVideoUrl={setVideoUrl}
-        timings={timings}
-        setTimings={setTimings}
         ffmpeg={ffmpeg}
         ready={ready}
       />
@@ -80,18 +93,72 @@ function VideoEditor({ ready, ffmpeg }) {
   };
 
   //Function handling the file upload file logic
-  const uploadFile = async (fileInput) => {
-    console.log(fileInput[0]);
-    let fileUrl = URL.createObjectURL(fileInput[0]);
-    setIsUpload(false);
+  // const uploadFile = async (fileInput) => {
+  //   console.log(fileInput[0]);
+  //   let fileUrl = URL.createObjectURL(fileInput[0]);
+  //   setIsUpload(false);
+  //   setVideoUrl(fileUrl);
+  //   setVideoBlob(fileInput[0]);
+  // };
+
+  async function createFile(url) {
+    let response = await fetch(url);
+    let data = await response.blob();
+    let metadata = {
+      type: "video/mp4",
+    };
+    let file = new File([data], "download.mp4", metadata);
+    let fileUrl = URL.createObjectURL(file);
+    console.log("hello", data, response);
+
     setVideoUrl(fileUrl);
-    setVideoBlob(fileInput[0]);
+    setVideoBlob(file);
+    setIsUpload(false);
+    setIsConverting(false);
+  }
+
+  // useEffect(() => {
+  //   createFile();
+  // }, []);
+
+  const handleDownload = async () => {
+    setIsConverting(true);
+    try {
+      const res = await axios.post(
+        "http://168.138.41.227:8002/get-dowload-link",
+        {
+          url: userInput,
+        }
+      );
+      createFile(res.data.data);
+    } catch (e) {
+      notification.error({
+        message: e.response.data?.message || "Something went wrong",
+      });
+      setIsConverting(false);
+    }
+
+    // setStatus('Downloading...');
+    // const url = userInput;
+    // const video = ytdl(url, {
+    //   quality: 'highest'
+    // });
+    // const output = fs.createWriteStream('video.mp4');
+    // video.pipe(output);
+    // console.log('output nè', output);
+    // output.on('finish', () => {
+    //   setStatus('Download complete');
+    // });
+    // video.on('error', (err) => {
+    //   setStatus(`Error: ${err}`);
+    // });
   };
 
   return (
     <div>
       {/* Boolean to handle whether to render the file uploader or the video editor */}
       {isUpload ? renderUploader() : renderEditor()}
+
       <div className={"theme_toggler"} onClick={toggleThemes}>
         {isDarkMode ? (
           <i className="toggle" aria-hidden="true">

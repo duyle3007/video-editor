@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createFFmpeg } from "@ffmpeg/ffmpeg";
 import "./App.css";
+import "antd/dist/reset.css";
 import VideoEditor from "./VideoEditor/VideoEditor";
 
 function App() {
@@ -27,9 +28,9 @@ function App() {
       corePath: "https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js",
     });
     load();
-    console.log("hereee");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <div className="App">
       <VideoEditor ready={ready} ffmpeg={ffmpeg} />

@@ -17,9 +17,11 @@ import {
 
 import { fetchFile } from "@ffmpeg/ffmpeg"; // https://github.com/ffmpegwasm/ffmpeg.wasm/blob/master/docs/api.md
 
-function Editor({ videoUrl, timings, setTimings, ready, ffmpeg }) {
+function Editor({ videoUrl, ready, ffmpeg }) {
   //Boolean state to handle video mute
   const [isMuted, setIsMuted] = useState(false);
+
+  const [timings, setTimings] = useState([]);
 
   //Boolean state to handle whether video is playing or not
   const [playing, setPlaying] = useState(false);
@@ -70,9 +72,9 @@ function Editor({ videoUrl, timings, setTimings, ready, ffmpeg }) {
   //Integer state to handle the progress bars numerical incremation
   const [progress, setProgress] = useState(0);
 
-  //Boolean state handling whether ffmpeg has loaded or not
+  console.log("progress", progress);
 
-  console.log("ready", ready, progress);
+  //Boolean state handling whether ffmpeg has loaded or not
 
   //Lifecycle handling the logic needed for the progress bar - displays the blue bar that grows as the video plays
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -80,12 +82,12 @@ function Editor({ videoUrl, timings, setTimings, ready, ffmpeg }) {
     if (playVideoRef.current.onloadedmetadata) {
       const currentIndex = currentlyGrabbedRef.current.index;
       const seek =
-        ((playVideoRef.current.currentTime - timings[0].start) /
+        ((playVideoRef.current.currentTime - timings[0]?.start) /
           playVideoRef.current.duration) *
         100;
       setSeekerBar(seek);
       progressBarRef.current.style.width = `${seekerBar}%`;
-      if (playVideoRef.current.currentTime >= timings[0].end) {
+      if (playVideoRef.current.currentTime >= timings[0]?.end) {
         playVideoRef.current.pause();
         setPlaying(false);
         currentlyGrabbedRef.current = {
@@ -94,9 +96,9 @@ function Editor({ videoUrl, timings, setTimings, ready, ffmpeg }) {
         };
         progressBarRef.current.style.width = "0%";
         progressBarRef.current.style.left = `${
-          (timings[0].start / playVideoRef.current.duration) * 100
+          (timings[0]?.start / playVideoRef.current.duration) * 100
         }%`;
-        playVideoRef.current.currentTime = timings[0].start;
+        playVideoRef.current.currentTime = timings[0]?.start;
       }
     }
 
@@ -472,7 +474,6 @@ function Editor({ videoUrl, timings, setTimings, ready, ffmpeg }) {
         muted={isMuted}
         ref={playVideoRef}
         onLoadedData={() => {
-          console.log(playVideoRef);
           playPause();
         }}
         onClick={() => {
